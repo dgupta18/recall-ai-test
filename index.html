@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Recall AI Testing</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2em;
+    }
+
+    input,
+    button {
+      margin: 0.5em 0;
+      padding: 0.5em;
+    }
+
+    #clear {
+      background-color: #f23628 !important;
+      color: white;
+      font-weight: 500;
+      border: none;
+      border-radius: 4px;
+      padding: 0.75em 1em;
+    }
+
+    .section {
+      margin-bottom: 2em;
+    }
+
+    label {
+      display: block;
+      margin-top: 1em;
+    }
+
+    #output {
+      margin-top: 1em;
+      color: #333;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Recall AI Bot UI</h1>
+  <div>
+    <button id="clear" type="button" onclick="clearAll()">Clear All</button>
+  </div>
+  <div>
+    <h3>Bot ID:</h3>
+    <input type="text" id="bot_id" size="50" placeholder="This will be populated once you join a meeting.">
+  </div>
+  <div class="section">
+    <h3>Join a Meeting</h3>
+    <label for="meeting_url">Meeting URL:</label>
+    <input type="text" id="meeting_url" size="50" placeholder="Enter meeting URL">
+    <button onclick="joinMeeting()">Join</button>
+    <div id="join_output"></div>
+  </div>
+  <div class="section">
+    <h3>Send Message to Bot</h3>
+    <label for="bot_message">Message:</label>
+    <input type="text" id="bot_message" size="50" placeholder="Enter message">
+    <button onclick="sendMessage()">Send</button>
+    <div id="message_output"></div>
+  </div>
+  <div class="section">
+    <h3>Download transcript</h3>
+    <button onclick="downloadTranscript()">Download</button>
+    <div id="download_output"></div>
+  </div>
+
+  <script>
+    function clearAll() {
+      console.log('Clear All clicked');
+      document.getElementById('meeting_url').value = '';
+      document.getElementById('bot_id').value = '';
+      document.getElementById('bot_message').value = '';
+      document.getElementById('join_output').textContent = '';
+      document.getElementById('message_output').textContent = '';
+      document.getElementById('download_output').textContent = '';
+    }
+    async function joinMeeting() {
+      const url = document.getElementById('meeting_url').value;
+      const output = document.getElementById('join_output');
+      const bot_id_input = document.getElementById('bot_id');
+      output.textContent = 'Joining...';
+      const res = await fetch('/join', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ meeting_url: url })
+      });
+      const data = await res.json();
+      output.textContent = JSON.stringify(data, null, 2);
+      if (data['details'] && data['details']['id']) {
+        bot_id_input.value = data['details']['id'];
+      } else if (data['bot_id']) {
+        bot_id_input.value = data['bot_id'];
+      }
+    }
+    async function sendMessage() {
+      const botId = document.getElementById('bot_id').value;
+      const message = document.getElementById('bot_message').value;
+      const output = document.getElementById('message_output');
+      output.textContent = 'Sending...';
+      const res = await fetch(`/api/bot/${botId}/message`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message })
+      });
+      const data = await res.json();
+      output.textContent = JSON.stringify(data, null, 2);
+    }
+    async function downloadTranscript() {
+      console.log('Download Transcript clicked');
+      const botId = document.getElementById('bot_id').value;
+      console.log('Bot ID:', botId);
+      const output = document.getElementById('download_output');
+      output.textContent = 'Downloading...';
+      const res = await fetch(`/api/bot/${botId}/transcript`);
+      const data = await res.json();
+      output.textContent = JSON.stringify(data, null, 2);
+    }
+  </script>
+</body>
+
+</html>
