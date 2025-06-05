@@ -41,11 +41,6 @@ def recall_webhook():
 def create_bot_for_meeting():
     """
     Create a bot for the given meeting URL.
-    To try this endpoint with curl:
-    curl -X POST http://localhost:8080/join \
-    -H "Content-Type: application/json" \
-    --data '{"meeting_url": "<meeting_url>"}'
-    where <meeting_url> is the URL of the meeting you want to join.
     """
     meeting_url = request.json['meeting_url']
     if not meeting_url:
@@ -104,16 +99,6 @@ def create_bot_for_meeting():
     bot_id = response_json['id']
     print(f"Bot {bot_id} created successfully:", response.json())
 
-    # download_url = response_json['recordings'][0]['media_shorcuts']['transcript']['data']['download_url']
-
-    # # Get transcript
-    # transcript_response = requests.get(download_url)
-    # if transcript_response.status_code != 200:
-    #     return jsonify({"error": "Failed to download transcript", "details": transcript_response.json()}), transcript_response.status_code 
-    
-    # print("Transcript downloaded successfully")
-    # print(transcript_response.json())
-
     return jsonify({
         "message": f"Bot created for {meeting_url}"
     }), 200
@@ -150,17 +135,15 @@ def get_transcript_for_bot(bot_id):
     """
     Get the transcript for the given bot ID.
     """
-    print("IN get_transcript_for_bot")
+    print("Retrieving transcript for bot ID:", bot_id)
+
     url = f"https://us-west-2.recall.ai/api/v1/bot/{bot_id}"
     headers = {
         "Authorization": RECALL_API_TOKEN,
         "accept": "application/json",
     }
     
-    print("ID::::",bot_id)
     bot_response = requests.get(url, headers=headers)
-    print("Bot response:", bot_response.json())
-    print("Bot response status code:", bot_response.status_code)
     if bot_response.status_code != 200:
         return jsonify({"error": "Failed to get bot data", "details": bot_response.json()}), bot_response.status_code
     try:
@@ -179,14 +162,6 @@ def get_transcript_for_bot(bot_id):
         return jsonify({"error": "Failed to download transcript", "details": transcript_response.json()}), transcript_response.status_code
     print("Transcript downloaded successfully")
     return Response(transcript_response.content, mimetype='application/json')
-
-@app.route('/api/transcript/<download_url>', methods=['GET'])
-def get_transcript_from_url(download_url):
-    response = requests.get(download_url)
-    if response.status_code != 200:
-        return jsonify({"error": "Failed to download transcript", "details": response.json()}), response.status_code
-    print("Transcript downloaded successfully")
-    return Response(response.content, mimetype='application/json')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8080)
