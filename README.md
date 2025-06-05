@@ -5,8 +5,9 @@
 1. `python3 -m venv venv`
 2. `source venv/bin/activate`
 3. `pip3 install flask requests dotenv svix`
-4. Create a webhook https://us-west-2.recall.ai/dashboard/webhooks and copy the signing key to a `.env` file
-5. Create a recall API token and copy the token to the `.env` file
+4. Create a recall API token in the recall dashboard, and copy the token to your `.env` file
+5. Create a recall webhook in the recall dashboard https://us-west-2.recall.ai/dashboard/webhooks, and copy the signing key to your `.env` file
+6. Create an ngrok tunnel to your local server where the app will be running, and copy that URL to your `.env` file (see ngrok section below for help)
 
 ### .env
 
@@ -15,6 +16,7 @@ Now your .env should look like this:
 ```
 RECALL_API_TOKEN=<token>
 RECALL_WEBHOOK_SIGNING_SECRET=<secret>
+WEBHOOK_BASE_URL=<url>
 ```
 
 ## Running
