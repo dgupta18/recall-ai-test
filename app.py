@@ -60,15 +60,13 @@ def create_bot_for_meeting():
                     "meeting_captions": {},
                 }
             },
-            "recording_config": {
-                "realtime_endpoints": [
-                    {
-                        "type": "webhook",
-                        "url": f"{WEBHOOK_BASE_URL}/api/webhook/recall",
-                        "events": ["transcript.data", "transcript.partial_data"]
-                    }
-                ]
-            }
+            "realtime_endpoints": [
+                {
+                    "type": "webhook",
+                    "url": f"{WEBHOOK_BASE_URL}/api/webhook/recall",
+                    "events": ["transcript.data", "transcript.partial_data"]
+                }
+            ]
         }
     }
     # if USING_PROVIDER:
