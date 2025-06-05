@@ -1,0 +1,43 @@
+{
+  "event": "transcript.data",
+  "data": {
+    "data": {
+      "words": [
+        {
+          "text": "Starting my transcript testing.",
+          "start_timestamp": {
+            "relative": 8.749394416809082,
+            "absolute": "2025-06-05T19:08:31.691361Z"
+          },
+          "end_timestamp": {
+            "relative": 11.937694549560549,
+            "absolute": "2025-06-05T19:08:34.879661Z"
+          }
+        }
+      ],
+      "participant": {
+        "id": 100,
+        "name": "Divya Gupta",
+        "is_host": true,
+        "platform": "unknown",
+        "extra_data": null
+      }
+    },
+    "transcript": {
+      "id": "47b57ab7-4e37-4db5-aced-69c78db9816f",
+      "metadata": {}
+    },
+    "realtime_endpoint": {
+      "id": "792f49c4-178f-4c38-9b8f-21b89cdc2f18",
+      "metadata": {}
+    },
+    "recording": {
+      "id": "082c4077-8e2f-4573-a860-9f6d6c5dbb3d",
+      "metadata": {}
+    },
+    "bot": {
+      "id": "c6b0c6c2-5a02-48ef-8b88-d01f74e30388",
+      "metadata": {}
+    }
+  }
+}

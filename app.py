@@ -18,6 +18,38 @@ def index():
     """
     return send_file('index.html')
 
+@app.route('/api/webhook/transcript', methods=['POST'])
+def transcript_webhook():
+    """
+    Handle webhook events from Recall AI for transcript data.
+    """
+    print(f"Received webhook transcription request")
+    try:
+        print("request.json",request.json)
+        words_array = request.json['data']['data']['words']
+        bot_id = request.json['data']['bot']['id']
+
+        if not words_array or not bot_id:
+            print("No words or bot_id found in the request")
+            return Response("No words or bot_id found", status=400)
+    
+        for word_obj in words_array:
+            text = word_obj['text']
+            response = requests.post(f'{WEBHOOK_BASE_URL}/api/bot/{bot_id}/message', json={
+                'message': text
+            })
+            if response.status_code != 200:
+                print(f"Failed to send message to bot {bot_id}: {response.json()}")
+
+        print("All words processed successfully")
+
+    except Exception as e:
+        print("Error parsing JSON:", e)
+        return Response("Invalid JSON", status=400)
+
+
+    return Response("Webhook received", status=200)
+
 @app.route('/api/webhook/recall', methods=['POST'])
 def recall_webhook():
     """
@@ -30,7 +62,6 @@ def recall_webhook():
     try:
         wh = Webhook(RECALL_WEBHOOK_SIGNING_SECRET)
         msg = wh.verify(payload, headers)
-        print('Webhook event-' + msg['event'])
         if msg['event'] in ['transcript.partial_data', 'transcript.done', 'transcript.processing']:
             print("Received transcript successfully:", msg)
         return jsonify({"status": "success", "message": "Webhook received"}), 200
@@ -63,31 +94,12 @@ def create_bot_for_meeting():
             "realtime_endpoints": [
                 {
                     "type": "webhook",
-                    "url": f"{WEBHOOK_BASE_URL}/api/webhook/recall",
+                    "url": f"{WEBHOOK_BASE_URL}/api/webhook/transcript",
                     "events": ["transcript.data", "transcript.partial_data"]
                 }
             ]
         }
     }
-    # if USING_PROVIDER:
-    #     data = {
-    #         "meeting_url": meeting_url,
-    #         "recording_config": {
-    #             "transcript": {
-    #                 "provider": {
-    #                     "assembly_ai_streaming": {}
-    #                 }
-    #             },
-    #             "realtime_endpoints": [
-    #                 {
-    #                     "type": "webhook",
-    #                     "url": f"{BASE_URL}/api/webhook/recall/transcript",
-    #                     "events": ["transcript.data", "transcript.partial_data"]
-    #                 }
-    #             ]
-    #         }
-    #     }
-    
     response = requests.post(url, headers=headers, json=body)
     if response.status_code != 200:
         return jsonify({"error": "Failed to create bot", "details": response.json()}), response.status_code
@@ -126,7 +138,7 @@ def send_message(bot_id):
     print("Message sent successfully:", response.json())
     return jsonify({
         "message": f"Message sent to bot {bot_id}"
-    }), 200
+    }, 200)
 
 @app.route('/api/bot/<bot_id>/transcript', methods=['GET'])
 def get_transcript_for_bot(bot_id):
