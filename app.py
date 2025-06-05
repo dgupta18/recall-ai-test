@@ -51,23 +51,23 @@ def transcript_webhook():
 
     return Response("Webhook received", status=200)
 
-@app.route('/api/webhook/recall', methods=['POST'])
-def recall_webhook():
-    """
-    Handle webhook events from Recall AI.
-    """
-    print("Received webhook request")
-    headers = request.headers
-    payload = request.data
+# @app.route('/api/webhook/recall', methods=['POST'])
+# def recall_webhook():
+#     """
+#     Handle webhook events from Recall AI.
+#     """
+#     print("Received webhook request")
+#     headers = request.headers
+#     payload = request.data
     
-    try:
-        wh = Webhook(RECALL_WEBHOOK_SIGNING_SECRET)
-        msg = wh.verify(payload, headers)
-        if msg['event'] in ['transcript.partial_data', 'transcript.done', 'transcript.processing']:
-            print("Received transcript successfully:", msg)
-        return jsonify({"status": "success", "message": "Webhook received"}), 200
-    except WebhookVerificationError as e:
-        return jsonify({"error": e}), 400
+#     try:
+#         wh = Webhook(RECALL_WEBHOOK_SIGNING_SECRET)
+#         msg = wh.verify(payload, headers)
+#         if msg['event'] in ['transcript.partial_data', 'transcript.done', 'transcript.processing']:
+#             print("Received transcript successfully:", msg)
+#         return jsonify({"status": "success", "message": "Webhook received"}), 200
+#     except WebhookVerificationError as e:
+#         return jsonify({"error": e}), 400
 
 @app.route('/join', methods=['POST'])
 def create_bot_for_meeting():
