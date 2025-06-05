@@ -8,6 +8,7 @@ app = Flask(__name__)
 load_dotenv()
 RECALL_API_TOKEN = os.getenv('RECALL_API_TOKEN')
 RECALL_WEBHOOK_SIGNING_SECRET = os.getenv('RECALL_WEBHOOK_SIGNING_SECRET')
+RECALL_BASE_URL = os.getenv('RECALL_BASE_URL', 'https://us-east-1.recall.ai/api/v1/bot')
 WEBHOOK_BASE_URL = os.getenv('WEBHOOK_BASE_URL', 'http://localhost:8080')
 USING_PROVIDER = False
 
@@ -77,7 +78,7 @@ def create_bot_for_meeting():
     if not meeting_url:
         return jsonify({"error": "meeting_url is required"}), 400
 
-    url = "https://us-west-2.recall.ai/api/v1/bot/"
+    url = RECALL_BASE_URL
     headers = {
         "Authorization": RECALL_API_TOKEN,
         "accept": "application/json",
@@ -119,7 +120,7 @@ def send_message(bot_id):
     Send a message to the Recall AI bot to send to the meeting chat.
     https://docs.recall.ai/reference/bot_send_chat_message_create
     """
-    url = f"https://us-west-2.recall.ai/api/v1/bot/{bot_id}/send_chat_message/"
+    url = f"{RECALL_BASE_URL}/{bot_id}/send_chat_message/"
     headers = {
         "Authorization": RECALL_API_TOKEN,
         "accept": "application/json",
@@ -147,7 +148,7 @@ def get_transcript_for_bot(bot_id):
     """
     print("Retrieving transcript for bot ID:", bot_id)
 
-    url = f"https://us-west-2.recall.ai/api/v1/bot/{bot_id}"
+    url = f"{RECALL_BASE_URL}/{bot_id}"
     headers = {
         "Authorization": RECALL_API_TOKEN,
         "accept": "application/json",
